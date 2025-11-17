@@ -10,6 +10,7 @@ import os
 
 #%%#chemins d'accès pour chaque personne
 rootpath_alice="C://Users//gauta//OneDrive//Documents//GitHub//fNIRS_projetM2"
+rootpath_imen ="C:/Users/imen4/Documents/fNIRS_projetM2"
 #ajouter le chemin d'accès du fichier Projet_fNIRS
 
 
