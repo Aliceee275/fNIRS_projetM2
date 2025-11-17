@@ -24,13 +24,12 @@ for i,file in enumerate(files):
     #on ouvre le fichier
     raw= mne.io.read_raw_nirx(file)
     sub_id= file.split("_")[-1]
-    #raw.plot(duration=5)
+    raw.plot(duration=5)
 #%%on renomme les anotations
-    new_annotations= {'Easy': 2, 'Hard': 1}
-    events,event_ids= mne.events_from_annotations(raw,new_annotations)
-    #raw.annotations.rename({'1.0': 'Hard', '2.0':'Easy'})
-    # new_annotations= {'Easy': 2, 'Hard': 1}
-    # event_ids=new_annotations
+    new_annotations= {'Easy': '2.0', 'Hard': '1.0'}
+    events,event_ids= mne.events_from_annotations(raw)
+    raw.annotations.rename({'1.0': 'Hard', '2.0':'Easy'})
+    event_ids=new_annotations
 
 #%%on convertit l'intensité en densité optique
     raw_od= mne.preprocessing.nirs.optical_density(raw)
