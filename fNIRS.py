@@ -34,7 +34,7 @@ for i,file in enumerate(files):
 #%%on convertit l'intensité en densité optique
     raw_od= mne.preprocessing.nirs.optical_density(raw)
     raw_od.plot(n_channels=len(raw_od.ch_names), duration=500, show_scrollbars=False)
-    
+    #mdofi
     #sous-échantillonage à 2Hz
     sfreq= raw_od.info['sfreq']
     raw_od=raw_od.resample(2)
