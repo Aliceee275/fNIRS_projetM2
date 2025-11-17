@@ -16,6 +16,8 @@ rootpath_imen ="C:/Users/imen4/Documents/fNIRS_projetM2"
 
 if 'gauta' in os.getcwd():
     rootpath = rootpath_alice
+elif 'imen4' in os.getcwd():
+    rootpath = rootpath_imen
 #compléter
 
 #elif 'name' in os.getcwd() :
