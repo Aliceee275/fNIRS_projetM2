@@ -14,7 +14,7 @@ import matplotlib
 #%%create paths
 path_root=cfg.rootpath
 path_data=os.path.join(path_root, "NIRS_DATA")
-path_raw=os.path.join(path_data, "NIRS_Raw_DATA")
+path_raw=os.path.join(path_data, "NIRS_Raw_Data")
 #%%initiate variables
 files= glob.glob(os.path.join(path_raw, "*"))
 

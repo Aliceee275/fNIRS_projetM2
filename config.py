@@ -9,7 +9,7 @@ Created on Wed Oct 22 10:58:03 2025
 import os
 
 #%%#chemins d'accès pour chaque personne
-rootpath_alice="C://Users//gauta//OneDrive//Bureau//Projet_FNIRS"
+rootpath_alice="C://Users//gauta//OneDrive//Documents//GitHub//fNIRS_projetM2"
 #ajouter le chemin d'accès du fichier Projet_fNIRS
 
 
