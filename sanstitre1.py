@@ -214,7 +214,7 @@ for idx, evoked in enumerate(all_evokeds):
         for roi in rois:
             for chroma in ["hbo", "hbr"]:
                 data = deepcopy(subj_data).pick(picks=rois[roi]).pick(chroma)
-                value = data.crop(tmin=5.0, tmax=7.0).data.mean() * 1.0e6
+                value = data.crop(tmin=5.0, tmax=7.0).data.max() * 1.0e6
 
                 # Append metadata and extracted feature to dataframe
                 this_df = pd.DataFrame(
@@ -234,3 +234,24 @@ df["Value"] = pd.to_numeric(df["Value"])
 
 #%%Visualise max amplitudes for each participant for Hbo and Hbr
 
+sns.catplot(
+    x="Condition",
+    y="Value",
+    hue="ID",
+    data=df.query("Chroma == 'hbo'"),
+    errorbar=None,
+    palette="muted",
+    height=4,
+    s=10,
+)
+
+sns.catplot(
+    x="Condition",
+    y="Value",
+    hue="ID",
+    data=df.query("Chroma == 'hbr'"),
+    errorbar=None,
+    palette="muted",
+    height=4,
+    s=10,
+)
