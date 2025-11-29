@@ -214,7 +214,7 @@ for idx, evoked in enumerate(all_evokeds):
         for roi in rois:
             for chroma in ["hbo", "hbr"]:
                 data = deepcopy(subj_data).pick(picks=rois[roi]).pick(chroma)
-                value = data.crop(tmin=5.0, tmax=7.0).data.mean() * 1.0e6
+                value = data.crop(tmin=5.0, tmax=7.0).data.max() * 1.0e6
 
                 # Append metadata and extracted feature to dataframe
                 this_df = pd.DataFrame(
@@ -247,6 +247,8 @@ for roi in rois:
         s=10,
     )
 #%% en lineplot
+y_min = df.loc[df['Chroma']=='hbo', 'Value'].min()
+y_max = df.loc[df['Chroma']=='hbo', 'Value'].max()+1
 
 fig, axes = plt.subplots(nrows=1, ncols=len(rois), figsize=(17, 5))
 
@@ -262,9 +264,99 @@ for idx, roi in enumerate(rois):
         palette="muted",
         marker='o',
         ax=axes[idx],  # Utiliser l'index
-        legend=True
+        legend=True,
     )
+    axes[idx].set_ylim(y_min, y_max) 
     axes[idx].set_title(f"ROI: {roi}")  # Appliquer le titre à l'axe spécifique
 
 plt.tight_layout()  # Pour mieux espacer les subplots
 plt.show()
+
+#%%
+dict_delta = {r: [] for r in rois}
+for roi in df.ROI.unique():
+    df_roi = df.loc[df['ROI']==roi].query("Chroma == 'hbo'")
+    print(roi)
+    for sub in df_roi['ID'].unique():
+        easy= df_roi.loc[df_roi.ID == sub].query("Condition == 'Easy'")['Value'].values[0]
+        hard= df_roi.loc[df_roi.ID == sub].query("Condition == 'Hard'")['Value'].values[0]
+        print(hard)
+        delta= hard-easy
+        dict_delta[roi].append(delta)
+        print(df_roi.Chroma)
+#%%
+df_delta = pd.DataFrame.from_dict(dict_delta)
+
+#%%
+plt.figure(figsize=(10, 6))
+
+# Dégradé de violettes
+pastel_colors = ["#D5E8D4",  # Vert forêt clair
+                   "#66BB6A",  # Vert forêt moyen  
+                   "#3D8B3D"]
+
+sns.boxplot(data=df_delta, palette=pastel_colors)
+
+# Stripplot avec la même palette pour éviter les doublons
+sns.stripplot(data=df_delta, palette=pastel_colors, alpha=0.7, size=6, edgecolor='gray', linewidth=0.5, dodge=True)
+
+plt.title('Boxplot with Individual Data Points')
+plt.ylabel('Delta Values')
+plt.show()
+
+for col in df_delta.columns:
+    print('moyenne:', df_delta[col].mean(), '+/-', df_delta[col].std())
+
+#%% same but with effect size
+import numpy as np 
+from math import sqrt
+dict_effect = {r: {'hard': [], 'easy': []} for r in rois}
+
+for roi in df.ROI.unique():
+    df_roi = df.loc[df['ROI']==roi].query("Chroma == 'hbo'")
+    print(roi)
+    for sub in df_roi['ID'].unique():
+        easy= df_roi.loc[df_roi.ID == sub].query("Condition == 'Easy'")['Value'].values[0]
+        hard= df_roi.loc[df_roi.ID == sub].query("Condition == 'Hard'")['Value'].values[0]
+        dict_effect[roi]['easy'].append(easy)
+        dict_effect[roi]['hard'].append(hard)
+
+
+#%%
+df_delta = pd.DataFrame.from_dict(dict_delta)
+
+#%%
+plt.figure(figsize=(10, 6))
+
+# Dégradé de violettes
+pastel_colors = ["#D5E8D4",  # Vert forêt clair
+                   "#66BB6A",  # Vert forêt moyen  
+                   "#3D8B3D"]
+
+sns.boxplot(data=df_delta, palette=pastel_colors)
+
+# Stripplot avec la même palette pour éviter les doublons
+sns.stripplot(data=df_delta, palette=pastel_colors, alpha=0.7, size=6, edgecolor='gray', linewidth=0.5, dodge=True)
+
+plt.title('Boxplot with Individual Data Points')
+plt.ylabel('Delta Values')
+plt.show()
+
+for col in df_delta.columns:
+    print('moyenne:', df_delta[col].mean(), '+/-', df_delta[col].std())
+    
+#%% LMM
+input_data = df.query("Condition in ['Hard', 'Easy']")
+input_data = input_data.query("Chroma in ['hbo']")
+# input_data = input_data.query("ROI in ['Center','Right_Hemisphere','Left_Hemisphere']")
+input_data["ROI"] = pd.Categorical(
+    input_data["ROI"],
+    categories=["Center", "Left_Hemisphere", "Right_Hemisphere"]
+)
+input_data["ROI"] = input_data["ROI"].cat.reorder_categories(
+    ["Left_Hemisphere", "Center", "Right_Hemisphere"],
+    ordered=False
+)
+roi_model = smf.mixedlm("Value ~ Condition*ROI", input_data, groups=input_data["ID"]).fit()
+
+roi_model.summary()
