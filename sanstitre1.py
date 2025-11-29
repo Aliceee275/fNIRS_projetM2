@@ -176,7 +176,7 @@ print(rois)
 
 #Visualisation
 fig, axes = plt.subplots(nrows=len(rois), ncols=len(all_evokeds), figsize=(15, 6))
-lims = dict(hbo=[-8, 16], hbr=[-8, 16])
+lims = dict(hbo=[-5, 20], hbr=[-5, 20])
 
 for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
     for ridx, roi in enumerate(rois):
@@ -214,7 +214,7 @@ for idx, evoked in enumerate(all_evokeds):
         for roi in rois:
             for chroma in ["hbo", "hbr"]:
                 data = deepcopy(subj_data).pick(picks=rois[roi]).pick(chroma)
-                value = data.crop(tmin=5.0, tmax=7.0).data.max() * 1.0e6
+                value = data.crop(tmin=5.0, tmax=7.0).data.mean() * 1.0e6
 
                 # Append metadata and extracted feature to dataframe
                 this_df = pd.DataFrame(
@@ -234,24 +234,37 @@ df["Value"] = pd.to_numeric(df["Value"])
 
 #%%Visualise max amplitudes for each participant for Hbo and Hbr
 
-sns.catplot(
-    x="Condition",
-    y="Value",
-    hue="ID",
-    data=df.query("Chroma == 'hbo'"),
-    errorbar=None,
-    palette="muted",
-    height=4,
-    s=10,
-)
+for roi in rois:
+    df_roi= df.loc[df['ROI']==roi]
+    sns.catplot(
+        x="Condition",
+        y="Value",
+        hue="ID",
+        data=df_roi.query("Chroma == 'hbo'"),
+        errorbar=None,
+        palette="muted",
+        height=4,
+        s=10,
+    )
+#%% en lineplot
 
-sns.catplot(
-    x="Condition",
-    y="Value",
-    hue="ID",
-    data=df.query("Chroma == 'hbr'"),
-    errorbar=None,
-    palette="muted",
-    height=4,
-    s=10,
-)
+fig, axes = plt.subplots(nrows=1, ncols=len(rois), figsize=(17, 5))
+
+for idx, roi in enumerate(rois):
+    df_roi = df.loc[df['ROI']==roi].query("Chroma == 'hbo'")
+    
+    # Line plot to see the difference for a same participant
+    sns.lineplot(
+        x="Condition", 
+        y="Value",
+        hue="ID",
+        data=df_roi,
+        palette="muted",
+        marker='o',
+        ax=axes[idx],  # Utiliser l'index
+        legend=True
+    )
+    axes[idx].set_title(f"ROI: {roi}")  # Appliquer le titre à l'axe spécifique
+
+plt.tight_layout()  # Pour mieux espacer les subplots
+plt.show()
