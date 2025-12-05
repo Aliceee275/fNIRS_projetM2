@@ -15,6 +15,8 @@ and follows the instruction of our project found on moodle.
 The mne and mne_nirs, as bell as graph related libraries are required.
 A config script containing the paths is also necessary, with the 
 necessary changes to work on your computer.
+
+This script follows the PEP8 rules
 """
 
 #%% Import librairies
@@ -124,6 +126,8 @@ def individual_analysis(path):
         raw_od,
         ppf=0.1
         )
+    #visualize
+    #raw_haemo.plot(duration=30)
     # 5- Filtering with pass band ([0.002 - 0.3] Hz)
     raw_haemo = raw_haemo.filter(
         0.02,
@@ -133,7 +137,7 @@ def individual_analysis(path):
         verbose=False
     )
     #visualize
-    #raw_haemo.plot(duration=30)
+    raw_haemo.plot(duration=30)
 
     # Apply further data cleaning techniques (mne tutorial) and extract epochs
     raw_haemo = enhance_negative_correlation(raw_haemo)
@@ -320,20 +324,6 @@ for idx, evoked in enumerate(all_evokeds):
 df.reset_index(inplace=True, drop=True)
 df["Value"] = pd.to_numeric(df["Value"])
 
-#%%Visualize max amplitudes for each participant for Hbo and Hbr
-#Allows to visualize
-for roi in rois:
-    df_roi= df.loc[df['ROI']==roi]
-    sns.catplot(
-        x="Condition",
-        y="Value",
-        hue="ID",
-        data=df_roi.query("Chroma == 'hbo'"),
-        errorbar=None,
-        palette="muted",
-        height=4,
-        s=10,
-    )
     
 #%% Visualize max amplitudes for each participant for Hbo and Hbr with a lineplot 
 chromas= ['hbo', 'hbr']
