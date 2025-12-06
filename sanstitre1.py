@@ -127,7 +127,7 @@ def individual_analysis(path):
         ppf=0.1
         )
     #visualize
-    #raw_haemo.plot(duration=30)
+    raw_haemo.plot(duration=30)
     # 5- Filtering with pass band ([0.002 - 0.3] Hz)
     raw_haemo = raw_haemo.filter(
         0.02,
