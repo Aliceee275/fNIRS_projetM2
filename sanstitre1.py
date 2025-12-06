@@ -382,12 +382,12 @@ df_delta_hbr = pd.DataFrame.from_dict(dict_delta_hbr)
 
 
 # Visualize
-
+#we create a list with our dataframes for hbo and hbr
 dfs = [df_delta_hbo, df_delta_hbr]
-#we appliend the same scale for hbo and hbr
+#we apply the same scale for hbo and hbr using the global min and max
 global_min = min(df_delta_hbo.min().min(), df_delta_hbr.min().min())
 global_max = max(df_delta_hbo.max().max(), df_delta_hbr.max().max())
-
+#We put both chromas on the same figure
 fig, axes = plt.subplots(nrows=len(chromas), ncols=1, figsize=(7, 10))
 
 # we create a color palette for our ROIs to make the boxplot more visual
@@ -398,6 +398,7 @@ colors = ["#D5E8D4", "#66BB6A", "#3D8B3D"]
 
 for row, chrom in enumerate(chromas):
     ax = axes[row]
+    #We pick the data for the chosen chroma
     df_plot=dfs[row]
     sns.boxplot(data=df_plot, palette=colors, ax=ax)
     sns.stripplot(
@@ -410,7 +411,7 @@ for row, chrom in enumerate(chromas):
         dodge=True, 
         ax=ax
         )
-    #ax.set_ylim(y_min, y_max) 
+    
     ax.set_ylabel(chrom)
     ax.set_title(f'Amplitude difference for each ROI ({chrom})')
     ax.set_ylim(global_min, global_max)
@@ -420,9 +421,10 @@ plt.tight_layout()
 plt.show()
 
 #print the mean for each ROI
-for col in df_delta.columns:
-    print('mean +/- std:', df_delta[col].mean(), '+/-', df_delta[col].std())
-
+for col in df_delta_hbo.columns:
+    print('mean +/- std:', df_delta_hbo[col].mean(), '+/-', df_delta_hbo[col].std())
+for col in df_delta_hbr.columns:
+    print('mean +/- std:', df_delta_hbr[col].mean(), '+/-', df_delta_hbr[col].std())
 #%% For statistical analysis, we use a LMM (effects of ROI and conditions)
 input_data = df.query("Condition in ['Hard', 'Easy']")
 input_data = input_data.query("Chroma in ['hbo']")
