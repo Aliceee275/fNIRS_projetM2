@@ -127,7 +127,7 @@ def individual_analysis(path):
         ppf=0.1
         )
     #visualize
-    raw_haemo.plot(duration=30)
+    #raw_haemo.plot(duration=30)
     # 5- Filtering with pass band ([0.002 - 0.3] Hz)
     raw_haemo = raw_haemo.filter(
         0.02,
@@ -137,7 +137,7 @@ def individual_analysis(path):
         verbose=False
     )
     #visualize
-    raw_haemo.plot(duration=30)
+    #raw_haemo.plot(duration=30)
 
     # Apply further data cleaning techniques (mne tutorial) and extract epochs
     raw_haemo = enhance_negative_correlation(raw_haemo)
