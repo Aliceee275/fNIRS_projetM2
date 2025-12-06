@@ -137,7 +137,7 @@ def individual_analysis(path):
         verbose=False
     )
     #visualize
-    raw_haemo.plot(duration=30)
+    #raw_haemo.plot(duration=30)
 
     # Apply further data cleaning techniques (mne tutorial) and extract epochs
     raw_haemo = enhance_negative_correlation(raw_haemo)
