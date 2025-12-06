@@ -359,32 +359,49 @@ plt.show()
 
 #%%Visualize amplitude difference: hard/easy conditions for each participant
 
-dict_delta = {r: [] for r in rois}
-for roi in df.ROI.unique():
-    df_roi = df.loc[df['ROI']==roi].query("Chroma == 'hbo'")
-    print(roi)
-    for sub in df_roi['ID'].unique():
-        easy= df_roi.loc[df_roi.ID == sub].query("Condition == 'Easy'")['Value'].values[0]
-        hard= df_roi.loc[df_roi.ID == sub].query("Condition == 'Hard'")['Value'].values[0]
-        print(hard)
-        delta= hard-easy
-        dict_delta[roi].append(delta)
-        print(df_roi.Chroma)
+dict_delta_hbo = {r: [] for r in rois}
+dict_delta_hbr = {r: [] for r in rois}
+
+for chrom in ["hbo", "hbr"]:
+    for roi in df.ROI.unique():
+        df_roi = df[(df['ROI'] == roi) & (df["Chroma"] == chrom)]
+        print(roi)
+        for sub in df_roi['ID'].unique():
+            easy= df_roi.loc[df_roi.ID == sub].query("Condition == 'Easy'")['Value'].values[0]
+            hard= df_roi.loc[df_roi.ID == sub].query("Condition == 'Hard'")['Value'].values[0]
+            print(hard)
+            delta= hard-easy
+            if chrom=="hbo":
+                dict_delta_hbo[roi].append(delta)
+            else:
+                dict_delta_hbr[roi].append(delta)
+            #print(df_roi.Chroma)
         
-df_delta = pd.DataFrame.from_dict(dict_delta)
+df_delta_hbo = pd.DataFrame.from_dict(dict_delta_hbo)
+df_delta_hbr = pd.DataFrame.from_dict(dict_delta_hbr)
+
 
 # Visualize
+
+dfs = [df_delta_hbo, df_delta_hbr]
+#we appliend the same scale for hbo and hbr
+global_min = min(df_delta_hbo.min().min(), df_delta_hbr.min().min())
+global_max = max(df_delta_hbo.max().max(), df_delta_hbr.max().max())
+
 fig, axes = plt.subplots(nrows=len(chromas), ncols=1, figsize=(7, 10))
 
 # we create a color palette for our ROIs to make the boxplot more visual
 colors = ["#D5E8D4", "#66BB6A", "#3D8B3D"]
+
+
 #Then we make a boxplot and a stripplot to see the data of each individual
 
 for row, chrom in enumerate(chromas):
     ax = axes[row]
-    sns.boxplot(data=df_delta, palette=colors, ax=ax)
+    df_plot=dfs[row]
+    sns.boxplot(data=df_plot, palette=colors, ax=ax)
     sns.stripplot(
-        data=df_delta,
+        data=df_plot,
         palette=colors,
         alpha=0.7,
         size=6,
@@ -395,7 +412,8 @@ for row, chrom in enumerate(chromas):
         )
     #ax.set_ylim(y_min, y_max) 
     ax.set_ylabel(chrom)
-    ax.set_title(f'Amplitude difference for each ROI ({chroma})')
+    ax.set_title(f'Amplitude difference for each ROI ({chrom})')
+    ax.set_ylim(global_min, global_max)
 
 
 plt.tight_layout()
