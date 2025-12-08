@@ -234,7 +234,11 @@ for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
         )
         axes[idx].set_title(f"{evoked}")
         
-axes[0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
+#We manually add the legend to ensure it is correct
+oxy = plt.plot([], [], color="r", label="Oxyhaemoglobin")[0]
+deoxy = plt.plot([], [], color="b", label="Deoxyhaemoglobin")[0]
+plt.legend(handles=[oxy, deoxy])
+
 #%% Visualisation for each ROI
 #First let's define our 3 ROI: left, center and right based on the montage
 left = [
@@ -268,8 +272,8 @@ fig, axes = plt.subplots(nrows=len(rois), ncols=len(all_evokeds), figsize=(12, 1
 lims = dict(hbo=[-10, 20], hbr=[-10, 20])
 
 for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
-    for ridx, roi in enumerate(rois):
-        for cidx, evoked in enumerate(all_evokeds):
+    for row, roi in enumerate(rois):
+        for col, evoked in enumerate(all_evokeds):
             if pick == "hbr":
                 picks = rois[roi][1::2]  # Select only the hbr channels
             else:
@@ -279,19 +283,23 @@ for pick, color in zip(["hbo", "hbr"], ["r", "b"]):
                 {evoked: all_evokeds[evoked]},
                 combine="mean",
                 picks=picks,
-                axes=axes[ridx, cidx],
+                axes=axes[row, col],
                 show=False,
                 colors=[color],
                 legend=False,
                 ylim=lims,
                 ci=0.95,
-                show_sensors=cidx == 2,
+                show_sensors=col == 2,
             )
-            axes[ridx, cidx].set_title("")
-        axes[0, cidx].set_title(f"{evoked}")
-        axes[ridx, 0].set_ylabel(f"{roi}\nChromophore (ΔμMol)")
+            axes[row, col].set_title("")
+            axes[0, col].set_title(f"{evoked}")
+        axes[row, 0].set_ylabel(f"{roi}\nChromophore (ΔμMol)")
+
+#we manually add the legend to ensure it is correct
         
-axes[0, 0].legend(["Oxyhaemoglobin", "Deoxyhaemoglobin"])
+oxy = plt.plot([], [], color="r", label="Oxyhaemoglobin")[0]
+deoxy = plt.plot([], [], color="b", label="Deoxyhaemoglobin")[0]
+axes[0,0].legend(handles=[oxy, deoxy])
 
 #%%Visualisation of maximal amplitudes for each subject
 #First we create a df and compute the maximal amplitudes
@@ -352,7 +360,7 @@ for row , chrom in enumerate(chromas):
         ax.set_ylim(y_min, y_max) 
         #put the titles for each column and row
         ax.set_title(f"ROI: {roi}") 
-        ax.set_ylabel(chrom)
+        ax.set_ylabel(f"{chrom} (μMol)")
 
 plt.tight_layout()  
 plt.show()

@@ -8,14 +8,14 @@ Created on Wed Oct 22 10:58:03 2025
 #%%packages
 import os
 
-#%%#chemins d'accès pour chaque personne
+#%%#Path for each person with access to the code
 rootpath_alice="C://Users//gauta//OneDrive//Documents//GitHub//fNIRS_projetM2"
 
 rootpath_marina="C:/Users/marin/Documents/GitHub/fNIRS_projetM2"
 
 rootpath_imen ="C:/Users/imen4/Documents/fNIRS_projetM2"
 
-#ajouter le chemin d'accès du fichier Projet_fNIRS
+#add the path to the Projet_fNIRS file
 
 
 if 'gauta' in os.getcwd():
@@ -25,7 +25,7 @@ elif 'imen4' in os.getcwd():
 
 elif 'marin' in os.getcwd():
     rootpath = rootpath_marina
-#compléter
+#to complete for each new user
 
 #elif 'name' in os.getcwd() :
     #rootpath = rootpath_name
